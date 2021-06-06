@@ -4,7 +4,9 @@ import sys
 ROOT = "/users/kcochran/projects/domain_adaptation/raw_data/"
 
 GENOME = sys.argv[1]  # mm10 or hg38
+assert GENOME == "mm10" or GENOME == "hg38", GENOME
 
+# this script assumes you've put this file in this location with the correct name!
 CHROMOSOME_SIZE_FILE = ROOT + GENOME + "/chrom.sizes"
 
 OUT_FILE = ROOT + GENOME + "/windows.unfiltered.bed"

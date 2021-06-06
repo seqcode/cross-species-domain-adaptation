@@ -7,6 +7,8 @@
 
 # This script was run on PSU's ACI computing cluster, so file paths
 # here may not match file paths in other scripts (from Kundaje Lab cluster).
+# Don't actually run this script as-is -- it just serves as a reference
+# for anyone who wants to replicate this project's peak-calling.
 
 
 # Expected arguments:

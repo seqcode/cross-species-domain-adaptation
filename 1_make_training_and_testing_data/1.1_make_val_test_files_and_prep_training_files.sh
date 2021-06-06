@@ -1,28 +1,30 @@
 #!/bin/bash
 
-ROOT="/users/kcochran/projects/domain_adaptation"
-
-### Run me first!!!!
 ### NOTE: this script needs to be run once for each species and TF.
 
+### This script begins the process of making all the files that
+# models will use for training, validation, and testing. Specifically,
+# this script creates the validation and testing set files for a
+# given TF and species, creates the binding training set's bound example files,
+# and preps the files that will be used to create the rest of the
+# training data: the binding training set's unbound example files
+# and the species-background training data files.
+
+# This script should be run before the rest of the scripts in this directory.
+# This script should be run after the runall script in the 0_* directory.
 
 
-### Parse args
-# Arguments expected: TF (CTCF, CEBPA, Hnf4a, or RXRA) and genome (mm10, hg38)
-
-tf=$1
-genome=$2
-
-if [[ -z "$tf" || -z "$genome" ]]; then
-  echo "Missing an argument. Required: TF, species."
-  exit 1
-fi
+### Arguments expected:
+ROOT=$1  # the directory for the project (same across all scripts)
+#ROOT="/users/kcochran/projects/domain_adaptation"
+tf=$2  # one of CTCF, CEBPA, Hnf4a, or RXRA
+genome=$3  # one of mm10, hg38
 
 echo "Prepping training datasets for $tf ($genome)."
 
 
-
 ### Check starting all.all file exists in correct dir
+
 # all.all should be a file of all windows to be used for training/testing
 # of models from a genome. This file is specific to each TF because it contains
 # a column of binary binding labels (TF bound = 1, else 0). The format is TSV,
@@ -30,18 +32,24 @@ echo "Prepping training datasets for $tf ($genome)."
 # and the final column containing binary binding labels for a given TF.
 # This file is created by genomic window filtering scripts, so it does not
 # contain regions filtered due to unmappability or the ENCODE blacklist.
+# Specifically, you should have run the scripts in the 0_* directory
+# to create these files.
 
 
+RAW_DATA_DIR="$ROOT/raw_data/$genome/$tf"
 DATA_DIR="$ROOT/data/$genome/$tf"
-allfile="$DATA_DIR/all.all"
+allfile="$RAW_DATA_DIR/all.all"
 
 if [[ ! -f "$allfile" ]]; then
-	echo "File all.all is missing from $DATA_DIR. Exiting."
+	echo "File all.all is missing from $RAW_DATA_DIR. Exiting."
 	exit 1
 fi
 
-allbed="$DATA_DIR/all.bed"
-awk -v OFS="\t" '{ print $1, $2, $3, $NF }' "$allfile" > "$allbed"
+# leftover from when we used to have additional columns in all.all
+#allbed="$DATA_DIR/all.bed"
+#awk -v OFS="\t" '{ print $1, $2, $3, $NF }' "$allfile" > "$allbed"
+
+allbed=$allfile
 
 total_windows=`wc -l < "$allbed"`
 echo "Total windows: $total_windows"

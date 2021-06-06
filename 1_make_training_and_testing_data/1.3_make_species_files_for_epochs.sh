@@ -1,10 +1,10 @@
 #!/bin/bash
 
-### NOTE: this should be run AFTER setup_training_data.sh.
+### NOTE: this script depends on the output from 1.1_make_val_test_files_and_prep_training_files.sh
 
 ### DA models need "species-background" training data for their discriminator
 # half to train on. This script makes those files, in similar style to the
-# make_neg_window_files_for_epochs.sh script, which makes the unbound site
+# 1.2_make_neg_window_files_for_epochs.sh script, which makes the unbound site
 # half of the normal training set.
 
 # This script first calculates how large the species-background datasets need
@@ -21,21 +21,18 @@
 # by the models, so this script will create one new file for each epoch, for 
 # each independent replicate model run.
 
-
-
-
-ROOT="/users/kcochran/projects/domain_adaptation"
-
 # RUNS: the number of replicate model training runs to make data for.
 RUNS=5
 # EPOCHS: the number of epochs the models will train for.
 # Files will be generated for each epoch.
 EPOCHS=15
 
-### Parse args
-# Expecting 1 argument: the TF to process data for (CTCF, CEBPA, Hnf4a, RXRA)
+# Expecting 2 arguments: the root directory for the project,
+#    and the TF to process data for (CTCF, CEBPA, Hnf4a, RXRA)
+ROOT=$1
+#ROOT="/users/kcochran/projects/domain_adaptation"
+tf=$2
 
-tf=$1
 # which species is 1 vs. 2 does not matter
 genome1="mm10"
 genome2="hg38"
@@ -48,11 +45,13 @@ fi
 echo "Prepping shuffled species-background datasets for $tf."
 
 DATA_DIR_s1="$ROOT/data/$genome1/$tf"
+# these files were made by the script 1.1_make_val_test_files_and_prep_training_files.sh
 TRAIN_FILE_s1="$DATA_DIR_s1/chr3toY_shuf.bed"
 POS_FILE_s1="$DATA_DIR_s1/chr3toY_pos_shuf.bed"
 bound_windows_s1=`wc -l < "$POS_FILE_s1"`
 
 DATA_DIR_s2="$ROOT/data/$genome2/$tf"
+# these files were made by the script 1.1_make_val_test_files_and_prep_training_files.sh
 TRAIN_FILE_s2="$DATA_DIR_s2/chr3toY_shuf.bed"
 POS_FILE_s2="$DATA_DIR_s2/chr3toY_pos_shuf.bed"
 bound_windows_s2=`wc -l < "$POS_FILE_s2"`
@@ -106,8 +105,5 @@ rm "$tmp_shuf_file"
 echo "Done!"
 
 exit 0
-
-
-
 
 
