@@ -15,7 +15,7 @@ See `2_train_and_test_models/flipGradientTF.py` for the implementation, `2_train
 
 Peak calling was performed using MultiGPS. Details on how to run MultiGPS can be found at http://mahonylab.org/software/multigps. See `0_preprocess_genome_and_peaks/peak_calling/run_multiGPS.sh` on the specific input arguments given to MultiGPS here. Note that this script requires use of a READDB instance, read distribution file, and design file for each peak call run.  This script is currently out-of-date with the rest of the repo because its filepaths are specific to the Mahony Lab's MultiGPS setup on Penn State's ACI computing cluster.
 
-**3. I want to know where genome annotation tracks (Umap, ENCODE exclusion list, RepeatMasker) were downloaded from. **
+**3. I want to know where genome annotation tracks (Umap, ENCODE exclusion list, RepeatMasker) were downloaded from.**
 
 See `setup_directories_and_download_files.sh` for exact URLs. See the ENCODE exclusion list paper (Amemiya et al. 2019, https://www.nature.com/articles/s41598-019-45839-z), the Umap/Bismap site by the Hoffman Lab (https://bismap.hoffmanlab.org/), and http://repeatmasker.org/ or http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg38&g=rmsk for more information on how these tracks were created.
 
@@ -86,7 +86,7 @@ source 1_make_training_and_testing_data/1_runall_setup_model_data.sh "/users/me/
 
 Now you are ready to train models!
 
-Direct the python scripts to the correct filepaths by editing the "ROOT" and the two genome filepaths in `2_train_and_test_models/default_params.py`. Then you can run either `run_training.sh` to train non-domain-adaptive models or `run_DA_training.sh` to train domain-adaptive models. Afterwards, you can walk through any downstream analysis or re-create any of the main figures from the manuscript using the Jupyter notebooks in `3_manuscript_figure_and_table_notebooks/`. That's it!
+Direct the python scripts to the correct filepaths by editing the "ROOT" and the two genome filepaths in `2_train_and_test_models/default_params.py`. If these genome FASTAs do not already have corresponding FASTA indexes in the same directory, you will need to make them -- see `2_train_and_test_models/default_params.py` for how to do that with Pyfaidx. Then you can run either `run_training.sh` to train non-domain-adaptive models or `run_DA_training.sh` to train domain-adaptive models. Afterwards, you can walk through any downstream analysis or re-create any of the main figures from the manuscript using the Jupyter notebooks in `3_manuscript_figure_and_table_notebooks/`. That's it!
 
 ## Dependencies
 - Python ~ 3.7
