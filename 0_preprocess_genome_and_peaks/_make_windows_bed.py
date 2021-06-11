@@ -1,16 +1,17 @@
 import sys
 
 
-ROOT = "/users/kcochran/projects/domain_adaptation/raw_data/"
-
-GENOME = sys.argv[1]  # mm10 or hg38
-assert GENOME == "mm10" or GENOME == "hg38", GENOME
+RAW_DATA_DIR=sys.argv[1]
+#ROOT = "/users/kcochran/projects/domain_adaptation/raw_data/"
 
 # this script assumes you've put this file in this location with the correct name!
-CHROMOSOME_SIZE_FILE = ROOT + GENOME + "/chrom.sizes"
+CHROMOSOME_SIZE_FILE = RAW_DATA_DIR + "/chrom.sizes"
 
-OUT_FILE = ROOT + GENOME + "/windows.unfiltered.bed"
+OUT_FILE = RAW_DATA_DIR + "/windows.unfiltered.bed"
 
+# these parameters decide the length and stride of the windows created
+# across all chromosomes.
+# the window size should be consistent with the expected input sequence of the model.
 WINDOW_SIZE = 500
 WINDOW_STRIDE = 50
 

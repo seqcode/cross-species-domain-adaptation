@@ -1,3 +1,34 @@
+''' This file implements classes that extend Keras's Sequence class
+	as iteratable data loaders for model training and validation.
+	
+	These generators use the PyfaidxCoordsToVals functionality from
+	the seqdataloader package (https://github.com/kundajelab/seqdataloader),
+	which uses a fasta index to quickly generate one-hot encodings of
+	sequences from a bed-formatted coordinate set corresponding to a
+	region in the genome. Because seqdataloader relies on a fasta index,
+	it is necessary for your genome fasta files (the paths of which are
+	specified in default_params.py) to have accompanying fasta indexes
+	in the same directory. These can be made using the pyfaidx package:
+	
+		import pyfaidx
+		Fasta(genome_fasta_filepath)
+	
+	The generators extract dataset filepaths and other parameters from
+	the Params object given as input. During initialization, they load in
+	the coordinates from their input bed files. These coordinates correspond
+	to examples that the generator will iteratively return. When a batch
+	of examples is fetched from the generator, that batch's worth of
+	coordinates is converted to one-hot sequences using the
+	PyfaidxCoordsToVals object. Labels for the examples are also produced
+	in the gase of the training generators.
+    
+	Because parts of the training datasets are epoch-specific, the
+	coordinate sets for those parts of the data must be re-loaded at the
+	end of each epoch. Thus, the training generators also implement an
+	on_epoch_end method that updates the filepaths for the epoch-specific
+	data and re-loads the coordinate sets from those files.
+'''
+
 from keras.utils import Sequence
 import numpy as np
 import random
@@ -5,12 +36,24 @@ import random
 from seqdataloader.batchproducers.coordbased.core import Coordinates
 from seqdataloader.batchproducers.coordbased.coordstovals.fasta import PyfaidxCoordsToVals
 
-import os
-import signal
+
 
 
 
 class TrainGenerator(Sequence):
+	''' This class implements an iterable data loader for the basic model
+		(non-domain-adaptive) for use during training. The training data
+		consists of bound (positive) and unbound (negative) examples. This
+		class loads in coordinates from the bound examples file and the
+		unbound examples file separately, and then when a batch is accessed,
+		it combines 50% bound examples and 50% unbound examples, with
+		corresponding labels of 1 and 0, into a batch's worth of one-hot
+		encoded sequences.
+		
+		Because the unbound examples are different every epoch, those
+		example coordinates are re-loaded from a new file at the end of
+		each epoch.
+	'''
 	def __init__(self, params):
 		self.posfile = params.bindingtrainposfile
 		self.negfile = params.bindingtrainnegfile
@@ -30,11 +73,12 @@ class TrainGenerator(Sequence):
 
 
 	def get_coords(self):
-		# Using current filenames stored in self.posfile and self.negfile,
-		# load in all of the training data as coordinates only.
-		# Then, when it is time to fetch individual batches, a chunk of
-		# coordinates will be converted into one-hot encoded sequences
-		# ready for model input.
+		''' Using current filenames stored in self.posfile and self.negfile,
+			load in all of the training data as coordinates only.
+			Then, when it is time to fetch individual batches, a chunk of
+			coordinates will be converted into one-hot encoded sequences
+			ready for model input.
+		'''
 		try:
 			with open(self.posfile) as posf:
 				pos_coords_tmp = [line.split()[:3] for line in posf]  # expecting bed file format
@@ -57,15 +101,17 @@ class TrainGenerator(Sequence):
 			assert len(pos_coords_batch) > 0, len(pos_coords_batch)
 			assert len(neg_coords_batch) > 0, len(neg_coords_batch)
 
-			# Seconds, convert the coordinates into one-hot encoded sequences
+			# Second, convert the coordinates into one-hot encoded sequences
 			pos_onehot = self.converter(pos_coords_batch)
 			neg_onehot = self.converter(neg_coords_batch)
 
-			# seqsdataloader returns empty array if coords are empty list or not in genome
+			# seqdataloader returns empty array if coords are empty list or not in genome
 			assert pos_onehot.shape[0] > 0, pos_onehot.shape[0]
 			assert neg_onehot.shape[0] > 0, neg_onehot.shape[0]
 
 			# Third, combine bound and unbound sites into one large array, and create label vector
+			# We don't need to shuffle here because all these examples will correspond
+			# to a simultaneous gradient update for the whole batch
 			all_seqs = np.concatenate((pos_onehot, neg_onehot))
 			labels = np.concatenate((np.ones(pos_onehot.shape[0],), np.zeros(neg_onehot.shape[0],)))
 
@@ -101,6 +147,15 @@ class TrainGenerator(Sequence):
 
 
 class ValGenerator(Sequence):
+	''' This class implements an iterable data loader for validation on
+		data from a given species (either souce/training or target. This
+		class loads in coordinates from the val set examples file,
+		and then when a batch is accessed, it converts that batch's worth
+		of coordinates into one-hot encoded sequences.
+		
+		This generator does not return labels -- those must be loaded in
+		separately if performance evaluation is the goal.
+	'''
 	def __init__(self, params, target_species = False):
 		if target_species:
 			self.valfile = params.targetvalfile
@@ -147,6 +202,33 @@ class ValGenerator(Sequence):
 
 
 class DATrainGenerator(Sequence):
+	''' This class implements an iterable data loader for the domain-adaptive
+		model for use during training. Part 1 of the training data
+		consists of bound (positive) and unbound (negative) examples. This
+		class loads in coordinates from the bound examples file and the
+		unbound examples file separately, and then when a batch is accessed,
+		it combines 50% bound examples and 50% unbound examples, with
+		corresponding binding labels of 1 and 0, into the first half of the
+		batch's worth of one-hot encoded sequences.
+		
+		Part 2 of the training data consists of "species-background" examples
+		originating from both the source and target species. This generator
+		loads in coordinates for examples from each species separately from
+		the binding examples in Part 1. When a batch is accessed, the second
+		half of that batch is produced by transforming those coordinates to
+		their one-hot encoded sequences. These examples have "masked" binding
+		labels (-1) which will cause them to be disregarded in the loss
+		calculations for the binding classifier head of the model.
+		
+		For both parts of each batch, "species discriminator" task labels are
+		also produced, but for the binding classifier training examples, the
+		species labels are masked (-1), so that the binding classifier never
+		trains on examples from the target species.
+		
+		Because the unbound and species-backgroundexamples are different every
+		epoch, those coordinates are re-loaded from new files at the end of
+		each epoch.
+	'''
 	def __init__(self, params):
 		print(vars(params))
 
@@ -172,12 +254,13 @@ class DATrainGenerator(Sequence):
 
 
 	def get_binding_coords(self):
+		''' Using current filenames stored in self.posfile and self.negfile,
+			load in all of the "binding" training data as coordinates only.
+			Then, when it is time to fetch individual batches, a chunk of
+			coordinates will be converted into one-hot encoded sequences
+			ready for model input.
+		'''
 		try:
-			# Using current filenames stored in self.posfile and self.negfile,
-			# load in all of the "binding" training data as coordinates only.
-			# Then, when it is time to fetch individual batches, a chunk of
-			# coordinates will be converted into one-hot encoded sequences
-			# ready for model input.
 			with open(self.posfile) as posf:
 				pos_coords_tmp = [line.split()[:3] for line in posf]
 				self.pos_coords = [Coordinates(coord[0], int(coord[1]), int(coord[2])) for coord in pos_coords_tmp]

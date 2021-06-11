@@ -1,19 +1,23 @@
 # This script uses the output from multiGPS
 # to make whole-genome 0/1 labels for TF binding.
 
+set -e
 
-if [[ $# -ne 2 ]]; then
+if [[ $# -ne 3 ]]; then
   echo "Error: wrong number of arguments passed to ${0}."
   exit 1
 fi
 
-genome=$1
-tf=$2
+ROOT=$1
+#ROOT="/users/kcochran/projects/domain_adaptation"
+genome=$2
+tf=$3
 
 cell="liver"
 
 # peaks are called at base resolution. windowSize specifies how large
-# to make the full peak window, which will be centered at the summit base
+# to make the full peak window, which will be centered at the summit base;
+# note that if overlap is 0.5, this doesn't matter
 windowSize=200
 
 # what fraction of overlap is needed between a peak and a window?
@@ -21,7 +25,7 @@ windowSize=200
 overlap=0.5
 
 
-DATA_DIR="/users/kcochran/projects/domain_adaptation/raw_data"
+DATA_DIR="$ROOT/raw_data"
 multiGPS_out_dir="$DATA_DIR/${genome}/${tf}"
 genome_windows_file="$DATA_DIR/${genome}/windows.bed"  # output from make_windows_files.sh
 peak_call_file="$multiGPS_out_dir/mgps_out_${tf}.bed"  # output from MultiGPS
@@ -83,7 +87,7 @@ lines=$(wc -l < "$labels_file")
 
 echo "${tf} labels finished. Output file contains ${lines} windows; ${poslines} overlapped with ${tf} peaks."
 
-rm "$peak_windows_file" "$genome_windows_with_peaks_sorted_file" "$pos_labels_file" "$neg_labels_file"
+rm "$genome_windows_with_peaks_sorted_file" "$pos_labels_file" "$neg_labels_file"
 
 exit 0
 

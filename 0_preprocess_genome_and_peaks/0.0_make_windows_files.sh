@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ROOT=$1  # the project directory (same across all scripts)
 #ROOT="/users/kcochran/projects/domain_adaptation"
 genome=$2  # one of mm10, hg38
@@ -7,7 +9,7 @@ GENOME_FILE=$3  # the full path of your whole-genome fasta file for the genome y
 
 
 # this directory structure was set up by ../setup_directories_and_download_files.sh
-RAW_DATA_DIR="$ROOT/raw_data/${genome}/"
+RAW_DATA_DIR="$ROOT/raw_data/${genome}"
 
 # see ../setup_directories_and_download_files.sh for where this blacklist file is downloaded from
 BLACKLIST_BED_FILE="$RAW_DATA_DIR/${genome}.blacklist.bed"
@@ -19,7 +21,7 @@ echo "Writing windows to bed file..."
 
 # This script assumes the chromosome sizes file chrom.sizes is in $RAW_DATA_DIR
 # The output is a bed file called windows.unfiltered.bed
-python _make_windows_bed.py "$genome"
+python _make_windows_bed.py "$RAW_DATA_DIR" 
 
 
 echo "Getting genomic sequences for all regions to filter unresolved sequence regions..."

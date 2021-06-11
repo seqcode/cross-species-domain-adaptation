@@ -42,7 +42,7 @@ echo "Using genome ${genome} and TF ${tf}."
 if [ $run_make_tf_labels = true ] ; then
   echo "Re-making TF labels..."
   # output of this script will be the "$tf_labels_file" used below
-  ./_make_tf_labels.sh $genome $tf || exit 1
+  ./_make_tf_labels.sh "$ROOT" "$genome" "$tf" || exit 1
 fi
 
 tf_labels_file="$DATA_DIR/binding_labels.bed"

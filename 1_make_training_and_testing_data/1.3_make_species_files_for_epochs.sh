@@ -77,7 +77,6 @@ for ((run=1;run<=RUNS;run++)); do
 	shuf "$TRAIN_FILE_s1" > "$tmp_shuf_file"
 	for ((epoch=1;epoch<=EPOCHS;epoch++)); do
 		head_line_num=$(( bound_windows * epoch ))
-		echo "For epoch $epoch, head ends at line $head_line_num"
 		epoch_run_filename="$DATA_DIR_s1/chr3toY_shuf_run${run}_${epoch}E.bed"
 		head -n "$head_line_num" "$tmp_shuf_file" | tail -n "$bound_windows" > "$epoch_run_filename"
 	done
@@ -93,7 +92,6 @@ for ((run=1;run<=RUNS;run++)); do
     shuf "$TRAIN_FILE_s2" > "$tmp_shuf_file"
     for ((epoch=1;epoch<=EPOCHS;epoch++)); do
         head_line_num=$(( bound_windows * epoch ))
-        echo "For epoch $epoch, head ends at line $head_line_num"
         epoch_run_filename="$DATA_DIR_s2/chr3toY_shuf_run${run}_${epoch}E.bed"
         head -n "$head_line_num" "$tmp_shuf_file" | tail -n "$bound_windows" > "$epoch_run_filename"
     done

@@ -61,7 +61,6 @@ for ((run=1;run<=RUNS;run++)); do
 	for ((epoch=1;epoch<=EPOCHS;epoch++)); do
         # calculate the # for the last line we want included in this epoch's batch
 		head_line_num=$(( bound_windows * epoch ))
-		echo "For epoch $epoch, head ends at line $head_line_num"
 		epoch_run_filename="$DATA_DIR/chr3toY_neg_shuf_run${run}_${epoch}E.bed"
 
         # fetch the chunk of lines that ends at $head_line_num and is $bound_windows long, and write to file
@@ -69,7 +68,6 @@ for ((run=1;run<=RUNS;run++)); do
 
 		# sanity check -- make sure the number of lines written to this epoch's file is what we expect
 		lines_in_file=`wc -l < "$epoch_run_filename"`
-		echo "Lines in $epoch_run_filename: $lines_in_file"
 		if [[ "$lines_in_file" != "$bound_windows" ]]; then
 			echo "Error: incorrect number of lines ($lines_in_file) in file $epoch_run_filename (should be $bound_windows). Exiting."
 			exit 1

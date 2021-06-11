@@ -55,7 +55,7 @@ wget "http://genome.ucsc.edu/goldenPath/help/hg38.chrom.sizes" -O "chrom.sizes"
 grep -v "_" "chrom.sizes" > tmp
 mv tmp "chrom.sizes"
 
-cd "$DATA_DIR/hg38"
+cd "$PROCESSED_DATA_DIR/hg38"
 wget https://hgdownload.cse.ucsc.edu/goldenPath/hg38/database/rmsk.txt.gz
 gunzip rmsk.txt.gz
 mv rmsk.txt rmsk.bed

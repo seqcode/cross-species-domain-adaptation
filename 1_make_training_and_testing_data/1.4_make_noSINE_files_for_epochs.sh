@@ -64,7 +64,6 @@ for ((run=1;run<=RUNS;run++)); do
 	shuf "$NEG_NOSINES_FILE" > "$tmp_shuf_file"
 	for ((epoch=1;epoch<=EPOCHS;epoch++)); do
 		head_line_num=$(( bound_windows * epoch ))
-		echo "For epoch $epoch, head ends at line $head_line_num"
 		epoch_run_filename="$DATA_DIR/chr3toY_neg_nosines_shuf_run${run}_${epoch}E.bed"
 		head -n "$head_line_num" "$tmp_shuf_file" | tail -n "$bound_windows" > "$epoch_run_filename"
 	done
@@ -94,7 +93,6 @@ for ((run=1;run<=RUNS;run++)); do
     shuf "$ALL_NOSINES_FILE" > "$tmp_shuf_file"
     for ((epoch=1;epoch<=EPOCHS;epoch++)); do
         head_line_num=$(( max_bound_windows * epoch ))
-        echo "For epoch $epoch, head ends at line $head_line_num"
         epoch_run_filename="$DATA_DIR/chr3toY_nosines_shuf_run${run}_${epoch}E.bed"
         head -n "$head_line_num" "$tmp_shuf_file" | tail -n "$max_bound_windows" > "$epoch_run_filename"
     done
