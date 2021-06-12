@@ -49,7 +49,8 @@ def basic_model(params):
 	seq = Dense(params.dl1nodes, activation = "relu")(seq)
 	seq = Dropout(params.dropout)(seq)
 	seq = Dense(params.dl2nodes, activation = "sigmoid")(seq)
-	result = Dense(1, activation = 'sigmoid')(seq)
+	seq = Dense(1)(seq)
+	result = Activation("sigmoid")(seq)
 
 	model = Model(inputs = seq_input, outputs = result)
 	return model

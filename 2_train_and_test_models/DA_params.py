@@ -18,7 +18,7 @@ class DA_Params(Params):
 		See default_params.py for the domain-adaptive model parameters. This class
 		does inherit most of the parameters from that class, but there are
 		some additional specifics.
-	''''
+	'''
 
 	def __init__(self, args):
 		Params.__init__(self, args)

@@ -80,7 +80,7 @@ class MetricsHistory(Callback):
 		print("auPRC:\t", auPRC)
 		loss = log_loss(labels, probs)  # this is binary cross-entropy
 		print("Loss:\t", loss)
-		print_confusion_matrix(labels, probs)
+		self.print_confusion_matrix(labels, probs)
 
 		return auPRC
     

@@ -30,23 +30,14 @@ BLACKLIST_FILE="$ROOT/raw_data/${genome}/${genome}.blacklist.bed"
 WINDOWS_FILE="$ROOT/raw_data/${genome}/windows.bed"
 UMAP_COV_FILE="$ROOT/raw_data/${genome}/k36.umap.windows_gt0.8cov.bed"
 
-# this script uses the output from _make_tf_labels.sh -- that script takes some time to run,
-# so if you've already run that (unlikely if you're not debugging), then you can skip re-running
-# it when running this script
-run_make_tf_labels=true  # set to false if you've already run before
-
 
 echo "Using genome ${genome} and TF ${tf}."
 
+"Making TF labels..."
+./_make_tf_labels.sh "$ROOT" "$genome" "$tf"
 
-if [ $run_make_tf_labels = true ] ; then
-  echo "Re-making TF labels..."
-  # output of this script will be the "$tf_labels_file" used below
-  ./_make_tf_labels.sh "$ROOT" "$genome" "$tf" || exit 1
-fi
-
+# output of the script above
 tf_labels_file="$DATA_DIR/binding_labels.bed"
-
 
 
 echo "Generating full dataset..."
@@ -81,7 +72,7 @@ if [ ! -s "$DATA_DIR/all.all" ]; then
 fi
 
 # cleanup -- delete tmp files
-rm "$DATA_DIR/all.bedsort.tmp.all" "$DATA_DIR/all.noBL.tmp.all" "$DATA_DIR/all.noUM.tmp.all"
+rm "$DATA_DIR/all.bedsort.tmp.all" "$DATA_DIR/all.noBL.tmp.all" "$DATA_DIR/all.noUM.tmp.all" "$tf_labels_file" "$WINDOWS_FILE"
 
 lines=$(wc -l < "$DATA_DIR/all.all")
 

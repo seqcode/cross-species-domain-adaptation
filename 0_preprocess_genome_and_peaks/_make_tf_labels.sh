@@ -44,7 +44,6 @@ peak_windows_file="$multiGPS_out_dir/peaks_${windowSize}bp.bed"
 genome_windows_with_peaks_sorted_file="$multiGPS_out_dir/${peaks}_200bp.sorted.bed"
 pos_labels_file="$multiGPS_out_dir/binding_labels.pos.bed"
 neg_labels_file="$multiGPS_out_dir/binding_labels.neg.bed"
-# tmp file, takes a long time to generate so is not deleted
 sorted_genome_windows_file="$DATA_DIR/${genome}/windows.dictsort.bed"
 
 # final output file
@@ -87,7 +86,7 @@ lines=$(wc -l < "$labels_file")
 
 echo "${tf} labels finished. Output file contains ${lines} windows; ${poslines} overlapped with ${tf} peaks."
 
-rm "$genome_windows_with_peaks_sorted_file" "$pos_labels_file" "$neg_labels_file"
+rm "$genome_windows_with_peaks_sorted_file" "$pos_labels_file" "$neg_labels_file" "$sorted_genome_windows_file"
 
 exit 0
 

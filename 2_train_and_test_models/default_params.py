@@ -35,7 +35,7 @@ class Params:
 		See DA_params.py for the domain-adaptive model parameters. That class
 		does inherit most of the parameters from this class, but there are
 		some additional specifics.
-		''''
+	'''
 
 	def __init__(self, args):
 		self.batchsize = 400  # number of examples seen every batch during training
