@@ -1,6 +1,12 @@
 #!/bin/bash
 
-set -e
+# This script processes a genome into a bed file of equal-sized windows,
+# ideal for subsequently training a neural network on.
+# The window size and stride are set to 500 and 50, respectively, but
+# you can adjust that inside make_windows_bed.py (which this script runs.)
+
+# You should run this script once per each species you plan to use.
+
 
 ROOT=$1  # the project directory (same across all scripts)
 #ROOT="/users/kcochran/projects/domain_adaptation"
@@ -14,6 +20,7 @@ RAW_DATA_DIR="$ROOT/raw_data/${genome}"
 # see ../setup_directories_and_download_files.sh for where this blacklist file is downloaded from
 BLACKLIST_BED_FILE="$RAW_DATA_DIR/${genome}.blacklist.bed"
 
+
 echo "Creating windows files for ${genome} genome."
 
 # make bed-formatted file (example line: "chr1 0 500") of all windows, given length of chromosomes and window dimensions
@@ -25,20 +32,22 @@ python _make_windows_bed.py "$RAW_DATA_DIR"
 
 
 echo "Getting genomic sequences for all regions to filter unresolved sequence regions..."
+
 # This step...
 # 1. Gets the sequence for each window in the bed file, returned in bed format
 # 2. Filters out any lines with N (any bases in the genome that are unknown)
 # 3. Removes the sequence info from each line (returning to 3-column bed format)
 # 4. Sorts the lines in the file in standard order
-
 bedtools getfasta -fi "$GENOME_FILE" -bed "$RAW_DATA_DIR/windows.unfiltered.bed" -bedOut | grep -v "n" | grep -v "N" | awk -v OFS="\t" '{print $1, $2, $3 }' | sort -k1,1 -k2,2n > "$RAW_DATA_DIR/windows.noN.bed" || exit 1
 
 
-# filter out regions of windows.bed that are blacklisted
-echo "Filtering out ENCODE-blacklisted regions from bed file..."
+# filter out regions of windows.bed that are artifactual hotspots
+echo "Filtering out ENCODE exclusion list regions from bed file..."
 
 bedtools intersect -a "$RAW_DATA_DIR/windows.noN.bed" -b "$BLACKLIST_BED_FILE" -v > "$RAW_DATA_DIR/windows.bed" || exit 1
 
+
+# cleaning up temp files
 rm "$RAW_DATA_DIR/windows.unfiltered.bed"
 rm "$RAW_DATA_DIR/windows.noN.bed"
 
@@ -46,6 +55,7 @@ rm "$RAW_DATA_DIR/windows.noN.bed"
 # finally, we get the coverage of all the windows by mappability tracks
 # windows with less than 80% of their sequence mappable by 36-mers are filtered out
 # this is to prevent false-negative peak calls in regions a TF could bind to, but reads cannot map to
+
 bedtools coverage -sorted -a "$RAW_DATA_DIR/windows.bed" -b "$RAW_DATA_DIR/k36.umap.bed" | awk -v OFS="\t" '$NF >= 0.8' > "$RAW_DATA_DIR/k36.umap.windows_gt0.8cov.bed"
 
 
