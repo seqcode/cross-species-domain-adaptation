@@ -80,8 +80,8 @@ Where each bed file is the peak calls for a given TF in a given species. The req
 Lastly, see inside `0_preprocess_genome_and_peaks/0_runall_preprocess_data.sh` where paths to genome FASTA files are written -- modify these paths to point to your genome FASTAs. Then you can run all the data pre-processing code, passing in the main directory path each time.
 
 ```
-source 0_preprocess_genome_and_peaks/0_runall_preprocess_data.sh "/users/me/domain_adaptation"
-source 1_make_training_and_testing_data/1_runall_setup_model_data.sh "/users/me/domain_adaptation"
+./0_preprocess_genome_and_peaks/0_runall_preprocess_data.sh "/users/me/domain_adaptation"
+./1_make_training_and_testing_data/1_runall_setup_model_data.sh "/users/me/domain_adaptation"
 ```
 
 Now you are ready to train models!
