@@ -33,7 +33,7 @@ UMAP_COV_FILE="$ROOT/raw_data/${genome}/k36.umap.windows_gt0.8cov.bed"
 
 echo "Using genome ${genome} and TF ${tf}."
 
-"Making TF labels..."
+echo "Making TF labels..."
 ./_make_tf_labels.sh "$ROOT" "$genome" "$tf"
 
 # output of the script above
@@ -72,7 +72,7 @@ if [ ! -s "$DATA_DIR/all.all" ]; then
 fi
 
 # cleanup -- delete tmp files
-rm "$DATA_DIR/all.bedsort.tmp.all" "$DATA_DIR/all.noBL.tmp.all" "$DATA_DIR/all.noUM.tmp.all" "$tf_labels_file" "$WINDOWS_FILE"
+rm "$DATA_DIR/all.bedsort.tmp.all" "$DATA_DIR/all.noBL.tmp.all" "$DATA_DIR/all.noUM.tmp.all" "$tf_labels_file"
 
 lines=$(wc -l < "$DATA_DIR/all.all")
 

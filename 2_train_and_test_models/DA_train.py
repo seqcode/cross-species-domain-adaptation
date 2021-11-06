@@ -80,6 +80,7 @@ def DA_model(params):
 	classifier = Dense(params.dl1nodes)(classifier)
 	classifier = Activation('relu')(classifier)
 	classifier = Dense(params.dl2nodes, activation = 'sigmoid')(classifier)
+	class_result = Dense(1, activation = 'sigmoid', name = "classifier")(classifier)
 
 	discriminator = Reshape((params.get_reshape_size(), ))(seq)
 	discriminator = GradientReversal(params.lamb)(discriminator)
@@ -87,8 +88,6 @@ def DA_model(params):
 	discriminator = Activation('relu')(discriminator)
 	discriminator = Dense(params.dl2nodes, activation = 'sigmoid')(discriminator)
 	disc_result = Dense(1, activation = 'sigmoid', name = "discriminator")(discriminator)
-
-	class_result = Dense(1, activation = 'sigmoid', name = "classifier")(classifier)
 
 	model = Model(inputs = seq_input, outputs = [class_result, disc_result])
 	return model
