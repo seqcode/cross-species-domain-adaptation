@@ -4,7 +4,7 @@ from math import ceil, floor
 from subprocess import check_output
 from pprint import pprint
 import numpy as np
-
+import os
 
 SPECIES_FILENAME = "chr3toY_shuf_runX_1E.bed"
 
@@ -40,6 +40,7 @@ class DA_Params(Params):
 		self.tf = args[1]
 		assert self.tf in TFS, self.tf
 		self.source_species = args[2]
+
 		assert self.source_species in SPECIES, self.source_species
 		self.run = int(args[3])
 
@@ -61,7 +62,9 @@ class DA_Params(Params):
 
 		timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 		# this filepath is specific to the domain-adaptive (DA) models
-		self.modelfile = MODEL_ROOT + self.tf + "/" + self.source_species + "_trained/DA/" + timestamp + "_run" + str(self.run)
+		self.modeldir = MODEL_ROOT + self.tf + "/" + self.source_species + "_trained/DA/"
+		os.makedirs(self.modeldir, exist_ok=True)
+		self.modelfile = self.modeldir + timestamp + "_run" + str(self.run)
 
 		self.source_genome_file = GENOMES[self.source_species]
 		self.target_genome_file = GENOMES[self.target_species]

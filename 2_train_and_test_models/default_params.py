@@ -3,6 +3,7 @@ from subprocess import check_output
 from pprint import pprint
 import numpy as np
 from datetime import datetime
+import os
 
 
 SPECIES = ["mm10", "hg38"]
@@ -13,7 +14,7 @@ TFS = ["CTCF", "CEBPA", "Hnf4a", "RXRA"]
 GENOMES = {"mm10" : "/users/kcochran/genomes/mm10_no_alt_analysis_set_ENCODE.fasta",
 			"hg38" : "/users/kcochran/genomes/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta"}
 
-ROOT = "/users/kcochran/projects/domain_adaptation"
+ROOT = "/users/kcochran/projects/domain_adaptation_nosexchr"
 DATA_ROOT = ROOT + "/data/"
 
 # These files are created by the script 1_make_training_and_testing_data/1_runall_setup_model_data.sh
@@ -74,6 +75,16 @@ class Params:
 		self.tf = args[1]
 		assert self.tf in TFS, self.tf
 		self.source_species = args[2]
+        
+		# check for human no-SINEs condition, update file pointers accordingly
+		if self.source_species == "NS":
+			NS = True
+			TRAIN_POS_FILENAME = "chr3toY_pos_nosines_shuf.bed"
+			TRAIN_NEG_FILENAME = "chr3toY_neg_nosines_shuf_runX_1E.bed"
+			self.source_species = "hg38"
+		else:
+			NS = False
+            
 		assert self.source_species in SPECIES, self.source_species
 		self.run = int(args[3])
 
@@ -95,7 +106,12 @@ class Params:
 
 		timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 		# this filepath is specific to the non-domain-adaptive models
-		self.modelfile = MODEL_ROOT + self.tf + "/" + self.source_species + "_trained/basic_model/" + timestamp + "_run" + str(self.run)
+		if not NS:
+			self.modeldir = MODEL_ROOT + self.tf + "/" + self.source_species + "_trained/basic_model/"
+		else:
+			self.modeldir = MODEL_ROOT + self.tf + "/" + self.source_species + "_trained/basic_model_nosines/"
+		os.makedirs(self.modeldir, exist_ok=True)
+		self.modelfile = self.modeldir + timestamp + "_run" + str(self.run)
 
 		self.source_genome_file = GENOMES[self.source_species]
 		self.target_genome_file = GENOMES[self.target_species]

@@ -65,7 +65,7 @@ fi
 # finally, remove weird chromosomes and fix the file formatting
 # no chrM, no chrEBV, and no scaffolds will be used
 # specifically, this line removes a redundant set of bed-info columns (chr \t start \t stop) in a slightly hacky way
-grep -E "chr[0-9XY]+" "$DATA_DIR/all.noUM.tmp.all" | sed -E 's/	/:/' | sed -E 's/	/-/' | sed -E 's/chr[0-9XY]+	[0-9]+	[0-9]+	//g' | sed -E 's/[:-]/	/g'> "$DATA_DIR/all.all"
+grep -E "chr[0-9]+" "$DATA_DIR/all.noUM.tmp.all" | sed -E 's/	/:/' | sed -E 's/	/-/' | sed -E 's/chr[0-9]+	[0-9]+	[0-9]+	//g' | sed -E 's/[:-]/	/g'> "$DATA_DIR/all.all"
 if [ ! -s "$DATA_DIR/all.all" ]; then
   echo "Error: failed at final step."
   exit 1

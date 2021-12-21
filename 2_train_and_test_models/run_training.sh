@@ -1,8 +1,10 @@
 #!/bin/bash
 
+set -e
+
 ROOT=$1  # root directory for project (same across all scripts)
 #ROOT="/users/kcochran/projects/domain_adaptation"
-LOG_ROOT="$ROOT/logs/training"
+LOG_ROOT="$ROOT/logs"
 
 # where all log files will be written to
 # log files contain performance measurements made each epoch for the model
@@ -33,7 +35,7 @@ for tf in "${tfs[@]}"; do
 			# this python script will train 1 model
 			# data fetched will be for the given $tf and $genome (source species)
 			# epoch-by-epoch performance metrics will be printed out to the log file
-
+			echo "Training $tf model in $genome, run $run."
 			python train.py "$tf" "$genome" "$run" > "$LOG_ROOT/BM_${genome}_${tf}_run${run}.log"
 		done
 	done

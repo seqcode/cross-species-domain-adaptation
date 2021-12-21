@@ -52,7 +52,7 @@ wget https://bismap.hoffmanlab.org/raw/hg38/k36.umap.bed.gz
 gunzip k36.umap.bed.gz
 
 wget "http://genome.ucsc.edu/goldenPath/help/hg38.chrom.sizes" -O "chrom.sizes"
-grep -v "_" "chrom.sizes" > tmp
+grep -v "_" "chrom.sizes" | grep -v "X" | grep -v "Y" | grep -v "M" > tmp
 mv tmp "chrom.sizes"
 
 cd "$PROCESSED_DATA_DIR/hg38"
@@ -71,7 +71,7 @@ wget https://bismap.hoffmanlab.org/raw/mm10/k36.umap.bed.gz
 gunzip k36.umap.bed.gz
 
 wget "https://hgdownload.soe.ucsc.edu/goldenPath/mm10/bigZips/mm10.chrom.sizes" -O "chrom.sizes"
-grep -v "_" "chrom.sizes" > tmp
+grep -v "_" "chrom.sizes" | grep -v "X" | grep -v "Y" | grep -v "M" > tmp
 mv tmp "chrom.sizes"
 
 echo "Done."

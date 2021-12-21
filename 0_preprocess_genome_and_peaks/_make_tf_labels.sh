@@ -54,7 +54,7 @@ labels_file="$multiGPS_out_dir/binding_labels.bed"
 echo "Getting TF binding peak windows from mGPS output..."
 
 # convert mGPS peak center coords to 200-bp windows, in bed format
-grep -E "chr[0-9XY]+" "$peak_call_file" | awk -v winSize="$windowSize" 'BEGIN{OFS="\t"}{if ($2 - winSize / 2 > 0) {print $1,$2 - winSize / 2,$3 + winSize / 2 - 1} else print $1, 0, $3 + winSize / 2 - 1}' | sort -k1,1 -k2,2n > "$peak_windows_file"
+grep -E "chr[0-9]+" "$peak_call_file" | awk -v winSize="$windowSize" 'BEGIN{OFS="\t"}{if ($2 - winSize / 2 > 0) {print $1,$2 - winSize / 2,$3 + winSize / 2 - 1} else print $1, 0, $3 + winSize / 2 - 1}' | sort -k1,1 -k2,2n > "$peak_windows_file"
 [ ! -s "$peak_windows_file" ] && exit 1
 
 # find all genome windows that overlap with one or more peaks by $overlap fraction

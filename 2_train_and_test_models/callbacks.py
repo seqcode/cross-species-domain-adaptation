@@ -33,6 +33,25 @@ class MetricsHistory(Callback):
 		# unless we call it something else.
 		self.parameters = parameters
 
+	def on_train_begin(self, logs={}):
+		params = self.parameters
+
+		print("Validating on target species...")
+		params.target_val_probs = self.model.predict_generator(ValGenerator(params, True),
+																use_multiprocessing = True,
+																workers = 8)
+		target_auprc = self.print_val_metrics(params, target_data = True)
+
+		print("Validating on source species...")
+		params.source_val_probs = self.model.predict_generator(ValGenerator(params, False),
+																use_multiprocessing = True,
+																workers = 8)
+		source_auprc = self.print_val_metrics(params, target_data = False)
+		current_auprcs = self.auprcs
+		current_auprcs.append(source_auprc)
+		self.auprcs = current_auprcs
+
+
 	def on_epoch_end(self, batch, logs={}):
 		params = self.parameters
 		
