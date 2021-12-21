@@ -1,9 +1,10 @@
-## Domain-adaptive Neural Networks For Cross-Species TF Binding Prediction
+# Domain-adaptive Neural Networks For Cross-Species TF Binding Prediction
 
-This repository is the codebase for reproducing all of the analyses from Cochran et al. 2021, "Domain adaptive neural networks improve cross-species prediction of transcription factor binding" (preprint at https://www.biorxiv.org/content/10.1101/2021.02.13.431115v1). Some code is adapted from work by @DivyanshiSrivastava, and the gradient reversal layer implementation is modified from @michetonu (Michele Tonutti) at https://github.com/michetonu/gradient_reversal_keras_tf ; otherwise the code here is authored by KC.
+This repository is the codebase for reproducing all of the analyses from Cochran et al. 2021, "Domain adaptive neural networks improve cross-species prediction of transcription factor binding" (preprint at https://www.biorxiv.org/content/10.1101/2021.02.13.431115v2).
 
 In this project, we trained neural networks to predict transcription factor binding in one species (mouse), and then assessed and improved upon the performance of these networks in a previously unseen species (human). The model architecture used is a hybrid convolutional-LSTM neural network. We trained both a standard (non-domain-adaptive) architecture and a domain-adaptive architecture, augmented with a second training task head and a gradient reversal layer, and showed that the domain-adaptive approach can reduce false-positive predictions on species-unique repeat elements in the cross-species prediction scenario. This codebase contains all the scripts needed to reproduce the data preprocessing, model training, and downstream analyses.
 
+---
 
 ### Quick-access Roadmap: Why Are You Here?
 
@@ -31,6 +32,7 @@ The directory `0_preprocess_genome_and_peaks/` contains all of the scripts respo
 
 See the section below!
 
+---
 
 ## Full Workflow
 
@@ -88,6 +90,22 @@ Now you are ready to train models!
 
 Direct the python scripts to the correct filepaths by editing the "ROOT" and the two genome filepaths in `2_train_and_test_models/default_params.py`. If these genome FASTAs do not already have corresponding FASTA indexes in the same directory, you will need to make them -- see `2_train_and_test_models/default_params.py` for how to do that with Pyfaidx. Then you can run either `run_training.sh` to train non-domain-adaptive models or `run_DA_training.sh` to train domain-adaptive models. Afterwards, you can walk through any downstream analysis or re-create any of the main figures from the manuscript using the Jupyter notebooks in `3_manuscript_figure_and_table_notebooks/`. That's it!
 
+---
+
+### Code credits:
+- Divyanshi Srivastava (@DivyanshiSrivastava) contributed code that helped found this repo
+- Alex Tseng (@amtseng) contributed code used for importance scoring and profile model training
+- Jacob Schreiber (@jmschrei) contributed code used for profile model training
+- The gradient reversal layer implementation is modified from Michele Tonutti (@michetonu)
+- Otherwise code is authored by Kelly Cochran (@kellycochran)
+
+### Repositories this project uses:
+- https://github.com/michetonu/gradient_reversal_keras_tf : the gradient-reversal layer initial implementation
+- https://github.com/kundajelab/seqdataloader : sequence-based model data-loading library
+- https://github.com/amtseng/fourier_attribution_priors : addition of attribution priors to improve profile model training
+- Importance scoring code is supported or inspired in part by code in the the TF-Modisco modeling repo (https://github.com/kundajelab/tfmodisco_tf_models).
+
+
 ## Dependencies
 - Python ~ 3.7
 - Keras: 2.3
@@ -95,9 +113,11 @@ Direct the python scripts to the correct filepaths by editing the "ROOT" and the
 - numpy: 1.19
 - seqdataloader: 0.130
   - pybigwig: 0.3.17
-- pyfaidx: 0.5.9 (only to make FASTA index)
+- pyfaidx: 0.5.9 (to make FASTA index)
 - bedtools: 2.26
 - scikit-learn: 0.23
 - scipy: 1.5
 - pandas: 1.0 (jupyter notebooks only)
 - Jupyter/IPython and nb_conda_kernels (jupyter notebooks only)
+- Pytorch: 1.18 (profile models only)
+- deeplift: 0.6.13 (visualizing importance scores only)
