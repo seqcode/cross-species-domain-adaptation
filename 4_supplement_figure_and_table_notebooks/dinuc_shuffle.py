@@ -1,6 +1,6 @@
 '''
-Largely stolen, with small modifications, from Alex Tseng
-t https://github.com/kundajelab/tfmodisco_tf_models/blob/25fa70b1c3551ed6fe77a0f11474c8bc9fbe422b/src/extract/dinuc_shuffle.py
+Largely borrowed, with small modifications, from Alex Tseng
+https://github.com/kundajelab/tfmodisco_tf_models/blob/25fa70b1c3551ed6fe77a0f11474c8bc9fbe422b/src/extract/dinuc_shuffle.py
 
 '''
 
