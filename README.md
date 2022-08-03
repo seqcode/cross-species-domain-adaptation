@@ -1,6 +1,6 @@
 # Domain-adaptive Neural Networks For Cross-Species TF Binding Prediction
 
-This repository is the codebase for reproducing all of the analyses from Cochran et al. 2021, "Domain adaptive neural networks improve cross-species prediction of transcription factor binding" (preprint at https://www.biorxiv.org/content/10.1101/2021.02.13.431115v2).
+This repository is the codebase for reproducing all of the analyses from Cochran et al. 2022, "Domain adaptive neural networks improve cross-species prediction of transcription factor binding" (https://pubmed.ncbi.nlm.nih.gov/35042722/).
 
 In this project, we trained neural networks to predict transcription factor binding in one species (mouse), and then assessed and improved upon the performance of these networks in a previously unseen species (human). The model architecture used is a hybrid convolutional-LSTM neural network. We trained both a standard (non-domain-adaptive) architecture and a domain-adaptive architecture, augmented with a second training task head and a gradient reversal layer, and showed that the domain-adaptive approach can reduce false-positive predictions on species-unique repeat elements in the cross-species prediction scenario. This codebase contains all the scripts needed to reproduce the data preprocessing, model training, and downstream analyses.
 
