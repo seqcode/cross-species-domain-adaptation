@@ -112,6 +112,6 @@ if __name__ == "__main__":
 	hist = model.fit_generator(epochs = params.epochs,
 								steps_per_epoch = params.train_steps,
 								generator = DATrainGenerator(params),
-								use_multiprocessing = False, workers = 8,
+								use_multiprocessing = True, workers = 8,
 								callbacks = [metrics_callback, save_callback])
 
